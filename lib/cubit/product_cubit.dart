@@ -10,13 +10,32 @@ class ProductCubit extends Cubit<ProductState> {
 
   ProductCubit() : super(ProductInitial());
 
-  Future<void> getProducts({int? page}) async {
+  Future<void> getProducts() async {
     emit(ProductLoading());
     try {
-      final products = await _product.getProduct(page: page);
+      final products = await _product.getProduct();
       final categories = await _product.getCategory();
 
-      emit(ProductSuccess(products: products, categories: categories));
+      emit(ProductSuccess(
+          products: products, categories: categories, loading: false));
+    } catch (e) {
+      print(e);
+
+      emit(ProductFailure(message: "Gagal mendapatkan data"));
+    }
+  }
+
+  Future<void> getMoreProducts() async {
+    ProductSuccess ps = state as ProductSuccess;
+    emit(ProductSuccess.loading(
+      products: ps.products,
+      categories: ps.categories,
+      loading: true,
+    ));
+
+    try {
+      final products = await _product.getProduct(skip: ps.products.length);
+      emit(ps.copyWith(products: products));
     } catch (e) {
       print(e);
 

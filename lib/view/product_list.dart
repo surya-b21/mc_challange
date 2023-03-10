@@ -18,7 +18,7 @@ class _ProductListState extends State<ProductList> {
 
   @override
   void initState() {
-    context.read<ProductCubit>().getProducts(page: 1);
+    context.read<ProductCubit>().getProducts();
     _scrollController.addListener(_scrollListener);
     // TODO: implement initState
     super.initState();
@@ -34,8 +34,7 @@ class _ProductListState extends State<ProductList> {
   void _scrollListener() {
     if (_scrollController.position.pixels ==
         _scrollController.position.maxScrollExtent) {
-      page = page + 1;
-      context.read<ProductCubit>().getProducts(page: page);
+      context.read<ProductCubit>().getMoreProducts();
     }
   }
 
@@ -61,7 +60,10 @@ class _ProductListState extends State<ProductList> {
               ),
               state is ProductSuccess
                   ? listProduct(products: state.products)
-                  : loadingList()
+                  : loadingList(),
+              state is ProductSuccess
+                  ? (state.loading == true ? loadingList() : Container())
+                  : Container()
             ],
           ),
         ),

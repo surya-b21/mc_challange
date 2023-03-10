@@ -3,18 +3,21 @@ import 'package:mc_challange/service/dio_service.dart';
 
 class ProductService {
   final _http = DioService().http;
-  final limit = {for (int i = 1; i <= 10; i++) i: i * 10};
+  // final limit = {for (int i = 1; i <= 10; i++) i: i * 10};
 
   Future<List<Product>> getProduct(
-      {String? search, String? category, int? page}) async {
+      {String? search, String? category, int? skip}) async {
     String url = "/products";
-    String query = "limit=${limit[page]}";
+    String query = "limit=10";
     if (category != null) {
       url = "$url/categories/$category";
     }
     if (search != null) {
       url = "$url/search";
       query = "q=$search&$query";
+    }
+    if (skip != null) {
+      query = "$query&skip=$skip";
     }
     final api = await _http.get("$url?$query");
 
